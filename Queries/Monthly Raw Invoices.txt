@@ -1,0 +1,31 @@
+SELECT
+	TRIM(sample.customer_id),
+	TRIM(sample.id_numeric),
+	TRIM(sample.status),
+	TRIM(sample.collected_from),
+	sample.sampled_date,
+	sample.recd_date,
+	TRIM(sample.template_id),
+	TRIM(test.analysis),
+	TRIM(result.name),
+	TRIM(result.text),
+	TRIM(result.status)
+
+
+FROM
+	sample
+
+INNER JOIN test
+	ON test.sample = sample.id_numeric
+
+INNER JOIN result
+	ON result.test_number = test.test_number
+
+
+WHERE
+	(sample.recd_date BETWEEN
+		TRUNC(ADD_MONTHS(SYSDATE, -1), 'MM') + 14
+		AND TRUNC(SYSDATE, 'MM') + 14)
+	AND TRIM ( sample.customer_id ) IS NOT NULL
+	AND ( result.rep_control <> 'N' OR test.analysis = 'MATRIX' )
+	AND sample.status NOT IN ('X')

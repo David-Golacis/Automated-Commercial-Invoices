@@ -1,0 +1,39 @@
+SELECT
+	sample.customer_id,
+	sample.template_id,
+	test.analysis,
+
+	CASE TRIM(test.analysis)
+		WHEN 'ACID_PEST'
+		THEN 'ACID Suite'
+		WHEN 'OCPP'
+		THEN 'OCP Suite'
+		WHEN 'ONP_PEST'
+		THEN 'ONS Suite'
+		WHEN 'PAH'
+		THEN 'PAH Suite'
+		WHEN 'TRZ_URON'
+		THEN 'TRZ_URON Suite'
+		WHEN 'VOC'
+		THEN 'VOC Suite'
+		ELSE result.name
+		END AS name
+
+
+FROM sample
+
+INNER JOIN test
+	ON test.sample = sample.id_numeric
+
+INNER JOIN result
+	ON result.test_number = test.test_number
+
+
+WHERE
+	(sample.recd_date BETWEEN
+		TRUNC(ADD_MONTHS(SYSDATE, -1), 'MM') + 14
+		AND TRUNC(SYSDATE, 'MM') + 14)
+	AND sample.customer_id = 'ELGA_2030'
+	AND sample.status NOT IN ('X', 'R')
+	AND result.rep_control <> 'N'
+	AND test.analysis NOT IN ('NON_CONF_S')

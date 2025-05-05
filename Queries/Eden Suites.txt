@@ -1,0 +1,15 @@
+SELECT
+	sample.customer_id,
+	sample.template_id,
+	COUNT(sample.id_numeric)
+
+FROM sample
+
+WHERE
+	(sample.recd_date BETWEEN
+		TRUNC(ADD_MONTHS(SYSDATE, -1), 'MM') + 14
+		AND TRUNC(SYSDATE, 'MM') + 14)
+	AND sample.customer_id = 'EDEN_SPR'
+	AND sample.status NOT IN ('X', 'R')
+
+GROUP BY sample.customer_id, sample.template_id
